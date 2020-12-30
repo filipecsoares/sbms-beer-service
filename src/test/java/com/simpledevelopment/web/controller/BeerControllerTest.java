@@ -1,5 +1,7 @@
 package com.simpledevelopment.web.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -11,10 +13,13 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.simpledevelopment.bootstrap.BeerLoader;
+import com.simpledevelopment.service.BeerService;
 import com.simpledevelopment.web.model.BeerDto;
 import com.simpledevelopment.web.model.BeerStyleEnum;
 
@@ -27,8 +32,13 @@ class BeerControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@MockBean
+	private BeerService beerService;
+
 	@Test
 	void testBeerById() throws Exception {
+		given(beerService.getById(any())).willReturn(getValidBeerDto());
+
 		mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID().toString()).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
@@ -37,6 +47,8 @@ class BeerControllerTest {
 	void testSaveNewBeer() throws Exception {
 		BeerDto beerDto = getValidBeerDto();
 		String beerDtoJson = objectMapper.writeValueAsString(beerDto);
+
+		given(beerService.saveNewBeer(any())).willReturn(getValidBeerDto());
 
 		mockMvc.perform(post("/api/v1/beer").contentType(MediaType.APPLICATION_JSON).content(beerDtoJson))
 				.andExpect(status().isCreated());
@@ -47,12 +59,14 @@ class BeerControllerTest {
 		BeerDto beerDto = getValidBeerDto();
 		String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
+		given(beerService.updateBeer(any(), any())).willReturn(getValidBeerDto());
+
 		mockMvc.perform(put("/api/v1/beer/" + UUID.randomUUID().toString()).contentType(MediaType.APPLICATION_JSON)
 				.content(beerDtoJson)).andExpect(status().isNoContent());
 	}
 
 	private BeerDto getValidBeerDto() {
 		return BeerDto.builder().beerName("Beer").beerStyle(BeerStyleEnum.IPA).price(new BigDecimal("2.99"))
-				.upc(123123123123L).build();
+				.upc(BeerLoader.BEER_1_UPC).build();
 	}
 }
