@@ -10,7 +10,9 @@ import com.simpledevelopment.web.model.BeerDto;
 @DecoratedWith(BeerMapperDecorator.class)
 public interface BeerMapper {
 
-	BeerDto beerToBeerDto(Beer beer);
+	public BeerDto beerToBeerDto(Beer beer);
 
-	Beer beerDtoToBeer(BeerDto beerDto);
+	public BeerDto beerToBeerDtoWithInventory(Beer beer);
+
+	public Beer beerDtoToBeer(BeerDto beerDto);
 }

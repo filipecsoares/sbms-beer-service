@@ -10,9 +10,10 @@ import com.simpledevelopment.web.model.BeerStyleEnum;
 
 public interface BeerService {
 
-	public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest);
+	public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest,
+			Boolean showInventoryOnHand);
 
-	public BeerDto getById(UUID beerId);
+	public BeerDto getById(UUID beerId, Boolean showInventoryOnHand);
 
 	public BeerDto saveNewBeer(BeerDto beerDto);
 
